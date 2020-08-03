@@ -1,24 +1,14 @@
-# For more information, please refer to https://aka.ms/vscode-docker-python
-FROM python:3.8-slim-buster
+FROM java
+MAINTAINER jack
+RUN apt-get update
+RUN apt-get install -y wget
 
-EXPOSE 5000
+RUN cd /
 
-# Keeps Python from generating .pyc files in the container
-ENV PYTHONDONTWRITEBYTECODE 1
+RUN wget http://apache.stu.edu.tw/tomcat/tomcat-7/v7.0.82/bin/apache-tomcat-7.0.82.tar.gz
 
-# Turns off buffering for easier container logging
-ENV PYTHONUNBUFFERED 1
+RUN tar zxvf apache-tomcat-7.0.82.tar.gz
 
-# Install pip requirements
-ADD requirements.txt .
-RUN python -m pip install -r requirements.txt
+CMD ["/apache-tomcat-7.0.82/bin/catalina.sh", "run"]
 
-WORKDIR /app
-ADD . /app
-
-# Switching to a non-root user, please refer to https://aka.ms/vscode-docker-python-user-rights
-RUN useradd appuser && chown -R appuser /app
-USER appuser
-
-# During debugging, this entry point will be overridden. For more information, please refer to https://aka.ms/vscode-docker-python-debug
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "hello_app.webapp:app"]
+EXPOSE 8080
